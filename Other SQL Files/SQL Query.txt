@@ -1,0 +1,73 @@
+/*===========================================================================+
+ |   Copyright (c) 2001, 2005 Oracle Corporation, Redwood Shores, CA, USA    |
+ |                         All rights reserved.                              |
+ +===========================================================================+
+ |  HISTORY                                                                  |
+ +===========================================================================*/
+package shubham.oracle.apps.fnd.query.webui.webui;
+
+import oracle.apps.fnd.common.VersionInfo;
+import oracle.apps.fnd.framework.webui.OAControllerImpl;
+import oracle.apps.fnd.framework.webui.OAPageContext;
+import oracle.apps.fnd.framework.webui.beans.OAWebBean;
+
+import shubham.oracle.apps.fnd.query.server.QueryAMImpl;
+import shubham.oracle.apps.fnd.query.server.QueryVOImpl;
+
+/**
+ * Controller for ...
+ */
+public class DynamicSetQueryVO extends OAControllerImpl
+{
+  public static final String RCS_ID="$Header$";
+  public static final boolean RCS_ID_RECORDED =
+        VersionInfo.recordClassVersion(RCS_ID, "%packagename%");
+
+  /**
+   * Layout and page setup logic for a region.
+   * @param pageContext the current OA page context
+   * @param webBean the web bean corresponding to the region
+   */
+  public void processRequest(OAPageContext pageContext, OAWebBean webBean)
+  {
+    super.processRequest(pageContext, webBean);
+    QueryAMImpl am = (QueryAMImpl)pageContext.getApplicationModule(webBean);    
+    QueryVOImpl voimpl = (QueryVOImpl)am.findViewObject("QueryVO1");    
+    voimpl.setFullSqlMode(voimpl.FULLSQL_MODE_AUGMENTATION);
+    voimpl.executeQuery();
+  }
+
+  /**
+   * Procedure to handle form submissions for form elements in
+   * a region.
+   * @param pageContext the current OA page context
+   * @param webBean the web bean corresponding to the region
+   */
+  public void processFormRequest(OAPageContext pageContext, OAWebBean webBean)
+  {
+    super.processFormRequest(pageContext, webBean);
+    QueryAMImpl am = (QueryAMImpl)pageContext.getApplicationModule(webBean);    
+    QueryVOImpl voimpl = (QueryVOImpl)am.findViewObject("QueryVO1");    
+    voimpl.setFullSqlMode(voimpl.FULLSQL_MODE_AUGMENTATION);
+    voimpl.setQuery("SELECT r.responsibility_name,a.application_name\n" + 
+    "    FROM fnd_user u,\n" + 
+    "         fnd_user_resp_groups ur,\n" + 
+    "         fnd_responsibility_tl r,\n" + 
+    "         fnd_application_tl a,\n" + 
+    "         fnd_application fa\n" + 
+    "   WHERE  ur.responsibility_id = r.responsibility_id\n" + 
+    "         AND u.user_id = ur.user_id\n" + 
+    "         AND fa.APPLICATION_ID = a.APPLICATION_ID\n" + 
+    "         AND r.application_id = a.application_id\n" + 
+    "         AND upper(u.user_name) = UPPER ('SGUPTA') " + 
+    "         AND a.language = 'US'\n" + 
+    "ORDER BY 1;");
+    voimpl.executeQuery();
+  }
+
+}
+
+
+SQL QUERY:-
+
+SELECT r.responsibility_name,a.application_name FROM fnd_user u, fnd_user_resp_groups ur, fnd_responsibility_tl r, fnd_application_tl a, fnd_application fa WHERE  ur.responsibility_id = r.responsibility_id AND u.user_id = ur.user_id AND fa.APPLICATION_ID = a.APPLICATION_ID AND r.application_id = a.application_id AND upper(u.user_name) = UPPER('SGUPTA') AND a.language = 'US' ORDER BY 1
